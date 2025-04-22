@@ -39,18 +39,20 @@ model = genai.GenerativeModel("gemini-2.0-flash", system_instruction=SYSTEM_PROM
 # Google OAuth 2.0 client setup
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
+# Function to get the Google provider configuration
 def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
 
-# Function to get the Google login URL
+# Function to get the Google login URL with scope
 def get_google_login_url():
     google_provider_cfg = get_google_provider_cfg()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
+    # Specify the required scopes (openid, email, and profile)
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
         redirect_uri="https://chatboo.streamlit.app",  # Replace with your Streamlit app's URI
-        scope=["openid", "email", "profile"],
+        scope=["openid", "email", "profile"],  # Added the required scopes here
     )
     return request_uri
 
@@ -61,10 +63,11 @@ def get_google_user_info(token):
     response = requests.get(userinfo_endpoint, headers={"Authorization": f"Bearer {token}"})
     return response.json()
 
-# Handle Google login process
+# Function to authenticate the user and store token
 def authenticate_user():
     if "google_token" in st.session_state:
         user_info = get_google_user_info(st.session_state["google_token"])
+        st.session_state["google_user_info"] = user_info
         st.write(f"Logged in as {user_info['name']}")
 
     if "google_user_info" in st.session_state:
@@ -73,6 +76,27 @@ def authenticate_user():
     if st.button("Login with Google"):
         google_login_url = get_google_login_url()
         st.write(f"[Click here to login with Google]({google_login_url})")
+
+    # Check if we received the callback from Google
+    query_params = st.experimental_get_query_params()
+    if "code" in query_params:
+        code = query_params["code"][0]
+        google_provider_cfg = get_google_provider_cfg()
+        token_url = google_provider_cfg["token_endpoint"]
+        token_response = requests.post(
+            token_url,
+            data={
+                "code": code,
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "redirect_uri": "https://chatboo.streamlit.app",  # Make sure this matches your redirect URI
+                "grant_type": "authorization_code",
+            },
+        )
+        token_json = token_response.json()
+        st.session_state["google_token"] = token_json["access_token"]
+        st.experimental_set_query_params()  # Clear the query parameters after the code exchange
+        st.experimental_rerun()  # Reload the app after token exchange
 
 # Function to start or clear chat history
 if "chat_session" not in st.session_state:
