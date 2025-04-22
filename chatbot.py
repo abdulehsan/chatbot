@@ -15,7 +15,6 @@ GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
-# Configure Gemini API
 genai.configure(api_key=api_key)
 
 # System Prompt for the chatbot
@@ -50,7 +49,7 @@ def get_google_login_url():
 
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
-        redirect_uri="http://localhost:8501",  # Replace with your Streamlit app's URI
+        redirect_uri="https://chatboo.streamlit.app",  # Replace with your Streamlit app's URI
         scope=["openid", "email", "profile"],
     )
     return request_uri
