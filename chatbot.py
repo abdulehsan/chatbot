@@ -3,13 +3,6 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 
-
-st.title("Authentication")
-
-if st.button("Log in with Google"):
-    st.login("google")
-
-
 # Load environment variables
 load_dotenv()
 api_key = os.getenv("API_KEY")
