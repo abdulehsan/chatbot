@@ -7,7 +7,7 @@ import google.generativeai as genai
 st.title("Authentication")
 
 if st.button("Log in with Google"):
-    st.experimental_user.login("google")
+    st.login("google")
 
 
 # Load environment variables
