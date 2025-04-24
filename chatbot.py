@@ -3,6 +3,13 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 
+
+st.title("Authentication")
+
+if st.button("Log in with Google"):
+    st.experimental_user.login("google")
+
+
 # Load environment variables
 load_dotenv()
 api_key = os.getenv("API_KEY")
@@ -25,6 +32,18 @@ that help them arrive at the solution on their own.
 
 Your goal is to help users **learn and understand**, not just copy-paste solutions.
 """
+
+def login_screen():
+    st.header("This app is private.")
+    st.subheader("Please log in.")
+    st.button("Log in with Google", on_click=st.login)
+if not st.experimental_user.is_logged_in:
+    login_screen()
+else:
+    st.header(f"Welcome, {st.experimental_user.name}!")
+st.button("Log out", on_click=st.logout)
+
+
 
 # Initialize Gemini model with system instruction
 model = genai.GenerativeModel("gemini-2.0-flash", system_instruction=SYSTEM_PROMPT)
