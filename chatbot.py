@@ -2,15 +2,11 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
-
-# Load environment variables
 load_dotenv()
 api_key = os.getenv("API_KEY")
 
-# Configure Gemini AI
 genai.configure(api_key=api_key)
 
-# Define system prompt for controlled AI responses
 SYSTEM_PROMPT = """ 
 You are a helpful AI assistant that guides users in solving coding problems.  
 Instead of providing direct solutions, you give structured hints and insights  
@@ -25,23 +21,18 @@ that help them arrive at the solution on their own.
 
 Your goal is to help users **learn and understand**, not just copy-paste solutions.
 """
+model = genai.GenerativeModel("gemini-2.0-flash", system_instruction=SYSTEM_PROMPT)
 
 def login_screen():
-    st.header("This app is private.")
-    st.subheader("Please log in.")
     st.button("Log in with Google", on_click=st.login)
+
 if not st.experimental_user.is_logged_in:
     login_screen()
 else:
     st.header(f"Welcome, {st.experimental_user.name}!")
-st.button("Log out", on_click=st.logout)
+    st.button("Log out", on_click=st.logout)
 
 
-
-# Initialize Gemini model with system instruction
-model = genai.GenerativeModel("gemini-2.0-flash", system_instruction=SYSTEM_PROMPT)
-
-# Ensure chat session is stored
 if "chat_session" not in st.session_state:
     st.session_state.chat_session = model.start_chat(history=[])
 
