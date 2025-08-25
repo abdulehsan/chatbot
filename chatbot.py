@@ -8,25 +8,15 @@ api_key = os.getenv("API_KEY")
 genai.configure(api_key=api_key)
 
 # Define system prompt for controlled AI responses
-SYSTEM_PROMPT = (
-    "You are an AI assistant that provides hints and guidance instead of direct code. "
-    "If a user asks for code, give conceptual guidance,hints , help him, or step-by-step instructions, "
-    "but do not provide the full solution directly."
-    "Your name is Sameer"
-)
+# SYSTEM_PROMPT = (
+#     "You are an AI assistant that provides hints and guidance instead of direct code. "
+#     "If a user asks for code, give conceptual guidance,hints , help him, or step-by-step instructions, "
+#     "but do not provide the full solution directly."
+#     "Your name is Sameer"
+# )
 
 # Initialize Gemini model with system instruction
-model = genai.GenerativeModel("gemini-2.0-flash", system_instruction=SYSTEM_PROMPT)
-
-def login_screen():
-    st.button("Log in with Google", on_click=st.login)
-
-if not st.experimental_user.is_logged_in:
-    login_screen()
-else:
-    st.header(f"Welcome, {st.experimental_user.name}!")
-    st.button("Log out", on_click=st.logout)
-
+model = genai.GenerativeModel("gemini-2.0-flash")
 
 if "chat_session" not in st.session_state:
     st.session_state.chat_session = model.start_chat(history=[])
