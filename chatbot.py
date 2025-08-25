@@ -7,6 +7,7 @@ api_key = os.getenv("API_KEY")
 
 genai.configure(api_key=api_key)
 
+# Define system prompt for controlled AI responses
 SYSTEM_PROMPT = """ 
 You are a helpful AI assistant that guides users in solving coding problems.  
 Instead of providing direct solutions, you give structured hints and insights  
@@ -21,6 +22,8 @@ that help them arrive at the solution on their own.
 
 Your goal is to help users **learn and understand**, not just copy-paste solutions.
 """
+
+# Initialize Gemini model with system instruction
 model = genai.GenerativeModel("gemini-2.0-flash", system_instruction=SYSTEM_PROMPT)
 
 def login_screen():
